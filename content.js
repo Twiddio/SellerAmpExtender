@@ -1,32 +1,14 @@
-console.log("Hello from content script");
 
 var loadMoreButton = document.getElementById("productList-loadmore").getElementsByClassName("btn")[0];
 var parentList = document.getElementById("productList");
-var storeDetailsTable = document.getElementById("search-sf-storedetails").getElementsByTagName("tbody")[0];
+var storeDetailsTable = document.getElementById("search-sf-storedetails");
  
 
-
-var observer = new MutationObserver(function(mutations){
-    mutations.forEach(function(mutation){
-        for(var i = 0; i < mutation.addedNodes.length; i++) {
-            storeDetailsTable = document.getElementById("search-sf-storedetails").getElementsByTagName("tbody")[0];
-            //console.log(storeDetailsTable);
-            if(storeDetailsTable) {
-                console.log("Injecting dorking params...");
-                injectDorkingParams();
-                observer.disconnect();
-                break;
-            }
-        }
-    });
-  
+var port = chrome.runtime.connect({name: "loading"});
+port.postMessage({loading: "connected"});
+port.onMessage.addListener(function(msg) {
+    
 });
-
-observer.observe(document.body, {
-    childList: true,
-    subtree: false
-});
-
 
 
 loadMoreButton.addEventListener("click", function() {
@@ -63,6 +45,6 @@ function updateHref(desiredSite) {
 
 function injectDorkingParams() {
     
-    console.log(storeDetailsTable.getElementsByTagName("tr"));
+    console.log(storeDetailsTable.getElementsByTagName("tr")[0].getElementsByTagName("td")[0].innerText);
     
 }
