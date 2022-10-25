@@ -2,7 +2,7 @@
     "name": "Seller AMP Extender",
     "version": "1.0.0",
     "description": "Adds functionallity to the Seller AMP web app",
-    "permissions": ["storage", "tabs"],
+    "permissions": ["storage", "tabs", "scripting"],
     "host_permissions": ["https://sas.selleramp.com/*"],
     "manifest_version": 3,
 
@@ -16,10 +16,15 @@
 
     "content_scripts": [
         {
+            "all_frames": false,
             "run_at": "document_end",
             "matches": ["https://sas.selleramp.com/*"],
             "js": ["content.js"]
         }
-    ]
+    ],
+
+    "externally_connectable": {
+        "matches": ["https://sas.selleramp.com/*"]
+    }
     
 }

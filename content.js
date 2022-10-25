@@ -2,21 +2,20 @@
 var loadMoreButton = document.getElementById("productList-loadmore").getElementsByClassName("btn")[0];
 var parentList = document.getElementById("productList");
 var storeDetailsTable = document.getElementById("search-sf-storedetails");
+var sellerID;
+var dorkingParamsInput;
  
-
-var port = chrome.runtime.connect({name: "loading"});
-port.postMessage({loading: "connected"});
-port.onMessage.addListener(function(msg) {
-    
-});
+checkIsLoaded();
 
 
 loadMoreButton.addEventListener("click", function() {
-    console.log("load more clicked");  
-    updateHref("Walmart.com");
+    updateHref(dorkingParamsInput.value);
 });
 
+
+
 function updateHref(desiredSite) {
+    console.log("Update HREF's to " + desiredSite);
     parentList = document.getElementById("productList");
     if(parentList) {
         if(parentList.childElementCount > 0) {
@@ -43,8 +42,38 @@ function updateHref(desiredSite) {
     }
 }
 
+function checkIsLoaded() {
+    var interval = setInterval(function() {
+        var indicator = storeDetailsTable.getElementsByTagName("tr")[0].getElementsByTagName("td")[0].innerText;
+        console.log(indicator);
+        if(indicator.includes("Loading")) {
+            console.log("not loaded");
+            return false;
+        } else {
+            console.log("loaded");
+            clearInterval(interval);
+            injectDorkingParams();
+            sellerID = storeDetailsTable.getElementsByTagName("tr")[1].getElementsByTagName("td")[1].innerText;
+            console.log(sellerID);
+            return true;
+        }
+    }, 1000);
+}
+
 function injectDorkingParams() {
-    
-    console.log(storeDetailsTable.getElementsByTagName("tr")[0].getElementsByTagName("td")[0].innerText);
-    
+    var row = storeDetailsTable.insertRow();
+    var labelCell = row.insertCell(0);
+    labelCell.innerHTML = "Dorking Params";
+    var valueCell = row.insertCell(1);
+    //create a blank text box in value cell
+    var input = document.createElement("input");
+    input.setAttribute("type", "text");
+    input.setAttribute("id", "dorkingParams");
+    valueCell.appendChild(input);
+
+    dorkingParamsInput = input;
+
+    input.addEventListener("blur", function() {
+        updateHref(input.value);
+    });
 }
